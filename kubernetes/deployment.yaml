@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: empty-dir
+  namespace: demo-namespace
+spec:
+  selector:
+    matchLabels:
+      app: empty-dir
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: empty-dir
+    spec:
+      volumes:
+        - name: log-path
+          hostPath:
+            path: /Users/pl465j/projects/kubeEmptyDir/log
+        - name: common-dir
+          emptyDir: {}
+      containers:
+      - name: curlscript
+        image: curlscript:latest
+        imagePullPolicy: Never
+        volumeMounts:
+          - name: common-dir
+            mountPath: /output
+      - name: logscript
+        image: logscript:latest
+        imagePullPolicy: Never
+        volumeMounts:
+          - name: log-path
+            mountPath: /log/
+          - name: common-dir
+            mountPath: /input
